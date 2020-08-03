@@ -3,13 +3,7 @@
 	"extends": "./tsconfig.base.json",
 	"compilerOptions": {
 		"outDir": "./out-tsc/spec",
-		"types": ["jasmine"],
-		"paths": {
-			"@app/*": ["app/*"],
-			"@environment/*": ["environments/*"],
-			"@shared/*": ["app/_shared/*"]
-			// "@helpers/*": ["helpers/*"]
-		}
+		"types": ["jasmine"]
 	},
 	"files": ["src/test.ts", "src/polyfills.ts"],
 	"include": ["src/**/*.spec.ts", "src/**/*.d.ts"]
