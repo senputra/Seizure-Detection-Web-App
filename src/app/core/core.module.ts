@@ -5,7 +5,7 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { environment } from '../../environments/environment';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreRouterConnectingModule } from '@ngrx/router-store';
-
+import { reducers } from './reducers/index';
 const routerStoreFilterPredicate = (
   actionType: string,
   res: boolean = true,
@@ -19,7 +19,7 @@ const routerStoreFilterPredicate = (
 @NgModule({
   imports: [
     CommonModule,
-    StoreModule.forRoot({}, {}),
+    StoreModule.forRoot(reducers, {}),
     StoreDevtoolsModule.instrument({
       maxAge: 25,
       logOnly: environment.production,
