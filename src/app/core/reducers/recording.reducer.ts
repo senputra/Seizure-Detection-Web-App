@@ -1,4 +1,4 @@
-import { User, ANONYMOUS_USER, RecordingStatus } from '../models';
+import { User, ANONYMOUS_DOCTOR, RecordingStatus } from '../models';
 import { createReducer, Action } from '@ngrx/store';
 
 export const recordingStateFeatureKey = 'recordingState';

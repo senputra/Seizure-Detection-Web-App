@@ -5,7 +5,7 @@
 export const environment = {
   production: false,
   keys: {
-    DOCTOR_KEY: 'abc',
+    GENERAL_KEY: 'abc',
     SPECIALIST_KEY: '123',
   },
 };

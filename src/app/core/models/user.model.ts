@@ -15,6 +15,7 @@ export enum DoctorType {
   GENERAL = 'GENERAL',
 }
 
-export const ANONYMOUS_USER: User = {
+export const ANONYMOUS_DOCTOR: Doctor = {
   name: '',
+  type: DoctorType.GENERAL,
 };

@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule, PreloadAllModules } from '@angular/router';
-
+import { AuthGuard, DoctorGuard } from '@core/guards';
 const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   {
@@ -10,10 +10,12 @@ const routes: Routes = [
   {
     path: 'detector',
     loadChildren: () => import('@feature/detector/detector.module').then(m => m.DetectorModule),
+    canActivate: [AuthGuard, DoctorGuard],
   },
   {
     path: 'record',
     loadChildren: () => import('@feature/record/record.module').then(m => m.RecordModule),
+    canActivate: [AuthGuard, DoctorGuard],
   },
   {
     path: 'record-dashboard',
@@ -21,11 +23,13 @@ const routes: Routes = [
       import('@feature/record-dashboard/record-dashboard.module').then(
         m => m.RecordDashboardModule,
       ),
+    canActivate: [AuthGuard, DoctorGuard],
   },
   {
     path: '**',
     loadChildren: () =>
       import('@feature/page-not-found/page-not-found.module').then(m => m.PageNotFoundModule),
+    canActivate: [AuthGuard],
   },
 ];
 

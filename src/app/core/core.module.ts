@@ -6,15 +6,7 @@ import { environment } from '../../environments/environment';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreRouterConnectingModule } from '@ngrx/router-store';
 import { reducers } from './reducers/index';
-const routerStoreFilterPredicate = (
-  actionType: string,
-  res: boolean = true,
-): { actionType: string; res: boolean } => {
-  return {
-    actionType,
-    res: res && actionType.startsWith('@ngrx'),
-  };
-};
+import { UserEffects } from './reducers/user.reducer';
 
 @NgModule({
   imports: [
@@ -24,9 +16,11 @@ const routerStoreFilterPredicate = (
       maxAge: 25,
       logOnly: environment.production,
       name: 'Seizure Detector',
-      predicate: actionType => routerStoreFilterPredicate(actionType).res,
+      predicate: (state, action) => {
+        return !action.type.startsWith('@ngrx');
+      },
     }),
-    EffectsModule.forRoot([]),
+    EffectsModule.forRoot([UserEffects]),
     StoreRouterConnectingModule.forRoot(),
   ],
   declarations: [],
