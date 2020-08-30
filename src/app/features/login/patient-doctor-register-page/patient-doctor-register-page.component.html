@@ -1,7 +1,7 @@
 <form [formGroup]="form" (ngSubmit)="submitSecretKey()" class="example-form">
   <mat-form-field appearance="fill">
     <mat-label>Doctor Name</mat-label>
-    <input matInput formControlName="doctorName" placeholder="Dr John Smith" />
+    <input matInput formControlName="doctorName" placeholder="Enter Doctor's Name" />
     <mat-error *ngIf="this.form.controls['doctorName'].hasError('required')">
       Name is <strong>required</strong>
     </mat-error>
@@ -9,7 +9,7 @@
   <br />
   <mat-form-field appearance="fill">
     <mat-label>Patient Name</mat-label>
-    <input matInput formControlName="patientName" placeholder="Julia Queen" />
+    <input matInput formControlName="patientName" placeholder="Enter Patient's Name" />
     <mat-error *ngIf="this.form.controls['patientName'].hasError('required')">
       Name is <strong>required</strong>
     </mat-error>

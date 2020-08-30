@@ -1,3 +1,10 @@
-<p>
-  record works!
-</p>
+<ng-container>
+  <p>
+    <button mat-raised-button (click)="startRecording()">START RECORDING</button><br />
+    <button mat-raised-button (click)="stopRecording()">STOP RECORDING</button>
+  </p>
+
+  <video id="preview"></video>
+
+  <canvas id="meter" width="500" height="50"></canvas>
+</ng-container>

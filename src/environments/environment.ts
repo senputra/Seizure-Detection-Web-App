@@ -8,6 +8,16 @@ export const environment = {
     GENERAL_KEY: 'abc',
     SPECIALIST_KEY: '123',
   },
+  firebaseConfig: {
+    apiKey: 'AIzaSyC-0k9eLQZi7WGmFGgSUyhj7YOY230zmss',
+    authDomain: 'seizure-detection-3b9dc.firebaseapp.com',
+    databaseURL: 'https://seizure-detection-3b9dc.firebaseio.com',
+    projectId: 'seizure-detection-3b9dc',
+    storageBucket: 'seizure-detection-3b9dc.appspot.com',
+    messagingSenderId: '75491667771',
+    appId: '1:75491667771:web:ea80657c36cc26f08f911e',
+    measurementId: 'G-J73908GNEY',
+  },
 };
 
 /*

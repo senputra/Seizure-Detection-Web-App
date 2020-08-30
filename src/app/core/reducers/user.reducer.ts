@@ -29,11 +29,21 @@ export interface UserState {
   loading: boolean;
   name?: string;
   patient?: Patient;
-  type?: DoctorType;
+  type: DoctorType;
 }
 export const userStateFeatureKey = 'user';
 
-const initialState = { loading: false };
+const FAKE_DOCTOR_GENERAL = {
+  loading: false,
+  type: DoctorType.GENERAL,
+  // name: 'sadf',
+  // patient: {
+  //   name: 'asdf',
+  //   age: 1,
+  // },
+};
+
+const initialState = { ...FAKE_DOCTOR_GENERAL, loading: false };
 
 /**
  * Reducer stuff
