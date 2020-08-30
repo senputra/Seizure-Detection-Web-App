@@ -127,7 +127,7 @@ export class UserEffects {
             }),
           ];
         }),
-        tap(() => this.router.navigate(['detector'])),
+        tap(() => this.router.navigate(['record'])),
         mergeMap(array => array),
       ),
     { dispatch: true },

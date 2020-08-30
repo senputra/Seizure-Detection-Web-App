@@ -15,6 +15,13 @@
     </mat-error>
   </mat-form-field>
   <br />
+  <mat-form-field appearance="fill">
+    <mat-label>Patient Age</mat-label>
+    <input matInput formControlName="patientAge" placeholder="Enter Patient's Age" />
+    <mat-error *ngIf="this.form.controls['patientAge'].hasError('required')">
+      Age is <strong>required</strong>
+    </mat-error>
+  </mat-form-field>
+  <br />
   <button mat-flat-button type="submit" [disabled]="!form.valid">Submit</button>
 </form>
-<br />

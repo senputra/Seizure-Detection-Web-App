@@ -10,9 +10,9 @@ import { CoreModule } from '@core/core.module';
 
 import { NavbarComponent } from './components/navbar/navbar.component';
 @NgModule({
-	declarations: [AppComponent, NavbarComponent],
-	imports: [BrowserModule, CoreModule, SharedModule, AppRoutingModule, BrowserAnimationsModule],
-	providers: [],
-	bootstrap: [AppComponent],
+  declarations: [AppComponent, NavbarComponent],
+  imports: [BrowserModule, CoreModule, SharedModule, AppRoutingModule, BrowserAnimationsModule],
+  providers: [],
+  bootstrap: [AppComponent],
 })
 export class AppModule {}

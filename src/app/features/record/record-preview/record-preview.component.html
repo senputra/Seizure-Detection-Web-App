@@ -1,1 +1,80 @@
-<video [src]="sanitize(this.previewURL$ | async)" controls></video>
+<div style="width: 80%; display: flex; flex-flow: column; align-items: center; margin: auto;">
+  <h1>Recording completed!</h1>
+  <div style="width: 100%; display: flex; flex-flow: row;">
+    <div style="width: 80%;">
+      <video
+        style="width: 80%; height: 30rem;"
+        [src]="sanitize(this.previewURL$ | async)"
+        controls
+      ></video>
+    </div>
+
+    <div style="width: 20%;">
+      <form [formGroup]="this.form" (ngSubmit)="submit()" class="example-form">
+        <mat-form-field appearance="fill">
+          <mat-label>Doctor Name</mat-label>
+          <input matInput formControlName="doctorName" placeholder="Enter Doctor's Name" />
+          <mat-error *ngIf="this.form.controls['doctorName'].hasError('required')">
+            Name is <strong>required</strong>
+          </mat-error>
+        </mat-form-field>
+        <br />
+        <mat-form-field appearance="fill">
+          <mat-label>Patient Name</mat-label>
+          <input matInput formControlName="patientName" placeholder="Enter Patient's Name" />
+          <mat-error *ngIf="this.form.controls['patientName'].hasError('required')">
+            Name is <strong>required</strong>
+          </mat-error>
+        </mat-form-field>
+        <br />
+        <mat-form-field appearance="fill">
+          <mat-label>Patient Age</mat-label>
+          <input matInput formControlName="patientAge" placeholder="Enter Patient's Age" />
+          <mat-error *ngIf="this.form.controls['patientAge'].hasError('required')">
+            Age is <strong>required</strong>
+          </mat-error>
+        </mat-form-field>
+        <br />
+        <button mat-raised-button type="submit" color="primary" [disabled]="!form.valid">
+          Submit
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div style="width: 80%; display: flex; flex-flow: column; justify-content: center;">
+    <div style="display: flex; flex-flow: row; align-items: baseline; justify-content: center;">
+      <p>Priority</p>
+      <ng-container *ngFor="let i of [1, 2, 3, 4, 5]">
+        <ng-container *ngIf="i <= this.priority; else deadBtn">
+          <button mat-icon-button color="primary" (click)="changePriority(i)">
+            <mat-icon>
+              priority_high
+            </mat-icon>
+          </button>
+        </ng-container>
+        <ng-template #deadBtn>
+          <button mat-icon-button (click)="changePriority(i)">
+            <mat-icon>
+              priority_high
+            </mat-icon>
+          </button>
+        </ng-template>
+      </ng-container>
+    </div>
+    <form [formGroup]="this.form" (ngSubmit)="submit()" class="example-form">
+      <mat-form-field appearance="fill" style="width: 100%;">
+        <p>Extra Notes</p>
+        <textarea
+          matInput
+          [matTextareaAutosize]="true"
+          [matAutosizeMinRows]="5"
+          [matAutosizeMaxRows]="10"
+          style="width: 100%;"
+          placeholder="Write extra notes here"
+          formControlName="extraNotes"
+        ></textarea>
+      </mat-form-field>
+    </form>
+  </div>
+</div>

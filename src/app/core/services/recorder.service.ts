@@ -17,7 +17,7 @@ export class RecordService {
   private audioMeter: ScriptProcessorNode | undefined = undefined;
   private audioContext: AudioContext | undefined = undefined;
   private mediaRecorder: MediaRecorder | undefined = undefined;
-
+  private processor: ScriptProcessorNodeMod | undefined = undefined;
   private videoPreviewHTML: HTMLVideoElement | undefined = undefined;
 
   constructor(private store: Store) {}
@@ -28,25 +28,25 @@ export class RecordService {
     averaging?: number,
     clipLag?: number,
   ): ScriptProcessorNode {
-    const processor = audioContext.createScriptProcessor(512 * 16) as ScriptProcessorNodeMod;
+    this.processor = audioContext.createScriptProcessor(512 * 16) as ScriptProcessorNodeMod;
     /**
      * onaudioprocess is triggerred everytime the buffer size is as specified
      */
-    processor.onaudioprocess = this.volumeAudioProcess as (
+    this.processor.onaudioprocess = this.volumeAudioProcess as (
       this: ScriptProcessorNode,
       ev: AudioProcessingEvent,
       // tslint:disable-next-line: no-any
     ) => any;
-    processor.clipping = false;
-    processor.lastClip = 0;
-    processor.volume = 0;
-    processor.clipLevel = clipLevel || 0.98;
-    processor.averaging = averaging || 0.95;
-    processor.clipLag = clipLag || 750;
+    this.processor.clipping = false;
+    this.processor.lastClip = 0;
+    this.processor.volume = 0;
+    this.processor.clipLevel = clipLevel || 0.98;
+    this.processor.averaging = averaging || 0.95;
+    this.processor.clipLag = clipLag || 750;
 
     // this will have no effect, since we don't copy the input to the output,
     // but works around a current Chrome bug.
-    processor.connect(audioContext.destination);
+    this.processor.connect(audioContext.destination);
 
     // processor.checkClipping = function (): boolean {
     //   if (!this.clipping) {
@@ -58,15 +58,15 @@ export class RecordService {
     //   return this.clipping;
     // };
 
-    processor.shutdown = function (): void {
+    this.processor.shutdown = function (): void {
       this.disconnect();
       this.onaudioprocess = null;
     };
 
-    processor.onLoudListener = () => {
+    this.processor.onLoudListener = () => {
       this.aboveThresholdListener();
     };
-    return processor;
+    return this.processor;
   }
 
   private volumeAudioProcess(
@@ -170,7 +170,6 @@ export class RecordService {
         const blob = new Blob(dataBuffer, { type: 'video/mp4;' });
         dataBuffer.splice(0);
         const videoURL = window.URL.createObjectURL(blob);
-
         this.store.dispatch(
           INITIATE_UPLOAD({
             blobFile: blob,
@@ -180,6 +179,12 @@ export class RecordService {
         );
       };
     });
+  }
+  shutdown(): void {
+    this.processor?.shutdown();
+    this.videoPreviewHTML?.pause();
+    this.audioMeter?.disconnect();
+    this.audioContext?.close();
   }
 }
 

@@ -3,10 +3,13 @@ import { RecordComponent } from './record.component';
 import { SharedModule } from '@shared/shared.module';
 import { Routes, RouterModule } from '@angular/router';
 import { RecordPreviewComponent } from './record-preview/record-preview.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { SuccessfulSubmissionComponent } from './successful-submission/successful-submission.component';
 
 const routes: Routes = [
-  { path: 'preview', component: RecordPreviewComponent },
   { path: '', component: RecordComponent },
+  { path: 'preview', component: RecordPreviewComponent },
+  { path: 'sus', component: SuccessfulSubmissionComponent },
 ];
 
 export const RecordRoutes = RouterModule.forChild(routes);
@@ -18,7 +21,7 @@ export const RecordRoutes = RouterModule.forChild(routes);
 class RecordRoutingModule {}
 
 @NgModule({
-  imports: [SharedModule, RecordRoutingModule],
-  declarations: [RecordComponent, RecordPreviewComponent],
+  imports: [SharedModule, RecordRoutingModule, FormsModule, ReactiveFormsModule],
+  declarations: [RecordComponent, RecordPreviewComponent, SuccessfulSubmissionComponent],
 })
 export class RecordModule {}

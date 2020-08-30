@@ -12,7 +12,7 @@ export class PatientDoctorRegisterPageComponent implements OnInit {
   form = this.fb.group({
     patientName: ['', Validators.required],
     doctorName: ['', Validators.required],
-    patientAge: [0, [Validators.min(0), Validators.max(100)]],
+    patientAge: [1, [Validators.min(0), Validators.max(100)]],
   });
 
   constructor(private store: Store, private fb: FormBuilder) {}
@@ -20,9 +20,9 @@ export class PatientDoctorRegisterPageComponent implements OnInit {
   submitSecretKey(): void {
     this.store.dispatch(
       GeneralDoctorInputData({
-        doctorName: (this.form.value['doctorName'] as string) || '',
-        patientName: (this.form.value['patientName'] as string) || '',
-        patientAge: (this.form.value['patientAge'] as number) || 1,
+        doctorName: (this.form.value.doctorName as string) || '',
+        patientName: (this.form.value.patientName as string) || '',
+        patientAge: (this.form.value.patientAge as number) || 1,
       }),
     );
   }

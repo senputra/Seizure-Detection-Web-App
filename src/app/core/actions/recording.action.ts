@@ -26,3 +26,21 @@ export const LOAD_RECORDER = createAction(
   '[recorder] load recorder',
   props<{ videoPreviewId: string }>(),
 );
+
+export const CHANGE_PRIORITY = createAction(
+  '[recorder] Change priority',
+  props<{ priority: number }>(),
+);
+
+export const SUBMIT_DATA = createAction(
+  '[doctor submit data] doctor submit data',
+  props<{
+    patientName: string;
+    doctorName: string;
+    patientAge: number;
+    priority: number;
+    extraNotes: string;
+  }>(),
+);
+
+export const REDO = createAction('[doctor] redo recording');
