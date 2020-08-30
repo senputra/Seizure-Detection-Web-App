@@ -44,3 +44,5 @@ export const SUBMIT_DATA = createAction(
 );
 
 export const REDO = createAction('[doctor] redo recording');
+
+export const TIMER_ONE_SEC_ELAPSED = createAction('[recorder] time elapsed');

@@ -3,6 +3,7 @@
   <div style="width: 100%; display: flex; flex-flow: row;">
     <div style="width: 80%;">
       <video
+        id="preview"
         style="width: 80%; height: 30rem;"
         [src]="sanitize(this.previewURL$ | async)"
         controls

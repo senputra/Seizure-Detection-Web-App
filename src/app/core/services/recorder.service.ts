@@ -40,7 +40,7 @@ export class RecordService {
     this.processor.clipping = false;
     this.processor.lastClip = 0;
     this.processor.volume = 0;
-    this.processor.clipLevel = clipLevel || 0.54;
+    this.processor.clipLevel = clipLevel || 0.74;
     this.processor.averaging = averaging || 0.95;
     this.processor.clipLag = clipLag || 1500;
 
@@ -99,23 +99,13 @@ export class RecordService {
     // ... then take the square root of the sum.
     const rms = Math.sqrt(sum / bufLength) * 2;
 
-    // Now smooth this out with the averaging factor applied
-    // to the previous sample - take the max here because we
-    // want "fast attack, slow release."
-    this.volume = Math.max(rms, this.volume * this.averaging);
-    // console.log(rms);
-    // console.log(this.volume);
-    if (this.volume > (loudnessThreshold || 0.1)) {
-      this.onLoudListener();
-    }
-
     // draw meter
     this.meterCtx.fillStyle = 'black';
     this.meterCtx.fillRect(0, 0, this.canva.width, this.canva.height);
     this.meterCtx.fillStyle = this.checkClipping() ? 'red' : 'green';
     this.meterCtx.fillRect(
       0,
-      this.canva.height * 1.5 - this.canva.height * rms * 1.5,
+      this.canva.height - this.canva.height * rms * 1.5,
       this.canva.width,
       this.canva.height * rms * 1.5,
     );
@@ -199,10 +189,10 @@ export class RecordService {
     });
   }
   shutdown(): void {
-    this.processor?.shutdown();
-    this.videoPreviewHTML?.pause();
-    this.audioMeter?.disconnect();
-    this.audioContext?.close();
+    // this.processor?.shutdown();
+    // this.videoPreviewHTML?.pause();
+    // this.audioMeter?.disconnect();
+    // this.audioContext?.close();
   }
 }
 

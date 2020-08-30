@@ -2,22 +2,42 @@
   id="preview"
   style="position: absolute; width: 100%; margin: auto; bottom: 0; left: 0; top: 0; right: 0;"
 ></video>
+<canvas id="meter" width="50" height="500" style="position: absolute; bottom: 0; left: 0;"></canvas>
 <ng-container>
   <div width="100%" style="display: flex; flex-flow: column; align-items: center;">
-    <div style="display: flex; flex-flow: row; justify-content: center;">
-      <ng-container *ngIf="isRecording$ | async; else notRecording">
-        <button mat-raised-button color="warn" (click)="stopRecording()">
-          STOP RECORDING
-        </button> </ng-container
-      ><ng-template #notRecording>
-        <button mat-raised-button (click)="startRecording()">START RECORDING</button>
-      </ng-template>
-    </div>
-    <canvas
-      id="meter"
-      width="50"
-      height="500"
-      style="position: absolute; bottom: 0; left: 0;"
-    ></canvas>
+    <ng-container *ngIf="isRecording$ | async; else notRecording">
+      <button mat-raised-button color="warn" (click)="stopRecording()">
+        STOP RECORDING {{ min$ | async }}:{{ secs$ | async }}
+      </button> </ng-container
+    ><ng-template #notRecording>
+      <button mat-raised-button (click)="startRecording()">START RECORDING</button>
+    </ng-template>
   </div>
 </ng-container>
+
+<div
+  class="spinner"
+  style="
+    margin: 20px;
+    width: 100px;
+    height: 100px;
+    background: #f00;
+    -webkit-animation-name: spin;
+    -webkit-animation-duration: 4000ms;
+    -webkit-animation-iteration-count: infinite;
+    -webkit-animation-timing-function: linear;
+    -moz-animation-name: spin;
+    -moz-animation-duration: 4000ms;
+    -moz-animation-iteration-count: infinite;
+    -moz-animation-timing-function: linear;
+    -ms-animation-name: spin;
+    -ms-animation-duration: 4000ms;
+    -ms-animation-iteration-count: infinite;
+    -ms-animation-timing-function: linear;
+
+    animation-name: spin;
+    animation-duration: 4000ms;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+  "
+></div>

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { EMPTY, from, of } from 'rxjs';
+import { EMPTY, from, of, interval } from 'rxjs';
 import {
   map,
   mergeMap,
@@ -11,6 +11,9 @@ import {
   tap,
   concatMap,
   withLatestFrom,
+  switchMap,
+  take,
+  takeUntil,
 } from 'rxjs/operators';
 import { CloudStorageService } from '../services/cloud-storage.service';
 import { RecordService } from '../services/recorder.service';
@@ -24,10 +27,15 @@ import {
   STOP_RECORDING,
   SUBMIT_DATA,
   REDO,
+  TIMER_ONE_SEC_ELAPSED,
 } from '../actions';
 import { UploadTaskSnapshot } from '@angular/fire/storage/interfaces';
 import { Router } from '@angular/router';
-import { selectPreviewVideoURL, selectStoragePath } from '@core/reducers/recording.reducer';
+import {
+  selectPreviewVideoURL,
+  selectStoragePath,
+  selectIsRecording,
+} from '@core/reducers/recording.reducer';
 import { Store } from '@ngrx/store';
 
 @Injectable()
@@ -38,17 +46,19 @@ export class RecordingEffects {
       tap(() => this.router.navigate(['record', 'preview'])),
       mergeMap(action => this.storageService.uploadRecordingData(action.blobFile, action.filename)),
       map((uploadTask: UploadTaskSnapshot | undefined) => {
+        // type guard
         if (typeof uploadTask === 'undefined') {
-          throw Error('upload task undefined');
+          throw Error('upload error');
         } else {
-          if (uploadTask.bytesTransferred === uploadTask.totalBytes) {
-            console.log(uploadTask.ref.fullPath);
-            return UPLOAD_DONE({ path: uploadTask.ref.fullPath });
-          }
+          return uploadTask;
         }
-        return UPLOADING({
-          percentage: uploadTask.bytesTransferred / uploadTask.totalBytes,
-        });
+      }),
+      filter(
+        (uploadTask: UploadTaskSnapshot) => uploadTask.bytesTransferred === uploadTask.totalBytes,
+      ),
+      map((uploadTask: UploadTaskSnapshot) => {
+        console.log(uploadTask.ref.fullPath);
+        return UPLOAD_DONE({ path: uploadTask.ref.fullPath });
       }),
     ),
   );
@@ -58,10 +68,25 @@ export class RecordingEffects {
       return this.actions$.pipe(
         ofType(START_RECORDING),
         /** An EMPTY observable only emits completion. Replace with your own observable stream */
-        map(() => this.recordService.startRecording()),
+        tap(() => this.recordService.startRecording()),
+        switchMap(action =>
+          interval(100).pipe(
+            take(181), // take must be inside the inner pipe to contain its effect
+            // concatMap(val => of(val).pipe(withLatestFrom(this.store.select(selectIsRecording)))),
+            // filter(([val, isRecording]) => isRecording),
+            takeUntil(this.actions$.pipe(ofType(STOP_RECORDING))),
+          ),
+        ),
+        map(val => {
+          if (val >= 180) {
+            return STOP_RECORDING();
+          } else {
+            return TIMER_ONE_SEC_ELAPSED();
+          }
+        }),
       );
     },
-    { dispatch: false },
+    // { dispatch: false },
   );
 
   stopRecording$ = createEffect(
@@ -71,7 +96,7 @@ export class RecordingEffects {
         /** An EMPTY observable only emits completion. Replace with your own observable stream */
         map(() => {
           this.recordService.stopRecording();
-          this.recordService.shutdown();
+          // this.recordService.shutdown();
         }),
       );
     },

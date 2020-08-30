@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/
 import { Observable, of, merge, Subscription, zip } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { selectPreviewVideoURL, selectPriority } from '@core/reducers/recording.reducer';
-import { tap, filter } from 'rxjs/operators';
+import { tap, filter, take } from 'rxjs/operators';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { Validators, FormBuilder } from '@angular/forms';
 import { selectDoctorName, selectPatientAge, selectPatientName } from '@core/reducers/user.reducer';
@@ -29,9 +29,12 @@ export class RecordPreviewComponent implements OnDestroy {
 
   private subscriptions: Subscription[] = [];
   constructor(private store: Store, private sanitizer: DomSanitizer, private fb: FormBuilder) {
+    const video = document.getElementById('preview') as HTMLVideoElement;
+
     this.previewURL$ = this.store.select(selectPreviewVideoURL).pipe(
       tap(url => console.log(url)),
       filter(url => !!url),
+      take(1),
     );
     this.docName$ = this.store.select(selectDoctorName).pipe(
       tap(url => console.log(url)),
