@@ -1,6 +1,12 @@
 import { User, ANONYMOUS_DOCTOR, RecordingStatus } from '../models';
 import { createReducer, Action, on, createFeatureSelector, createSelector } from '@ngrx/store';
-import { START_RECORDING, UPLOAD_DONE, INITIATE_UPLOAD, CHANGE_PRIORITY } from '@core/actions';
+import {
+  START_RECORDING,
+  UPLOAD_DONE,
+  INITIATE_UPLOAD,
+  CHANGE_PRIORITY,
+  STOP_RECORDING,
+} from '@core/actions';
 
 export const recordingStateFeatureKey = 'recording';
 
@@ -23,7 +29,7 @@ const recordingReducer = createReducer(
   on(START_RECORDING, (state, action) => {
     return { ...state, status: RecordingStatus.RECORDING };
   }),
-  on(START_RECORDING, (state, action) => {
+  on(STOP_RECORDING, (state, action) => {
     return { ...state, status: RecordingStatus.NOT_RECORDING };
   }),
   on(INITIATE_UPLOAD, (state, action) => {
@@ -49,6 +55,11 @@ export function RecordingReducer(
  */
 
 export const selectRecordingState = createFeatureSelector<RecordingState>(recordingStateFeatureKey);
+
+export const selectIsRecording = createSelector(
+  selectRecordingState,
+  (state: RecordingState) => state.status === RecordingStatus.RECORDING,
+);
 
 export const selectPreviewVideoURL = createSelector(
   selectRecordingState,

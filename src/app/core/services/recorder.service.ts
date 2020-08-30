@@ -19,7 +19,7 @@ export class RecordService {
   private mediaRecorder: MediaRecorder | undefined = undefined;
   private processor: ScriptProcessorNodeMod | undefined = undefined;
   private videoPreviewHTML: HTMLVideoElement | undefined = undefined;
-
+  private canva: HTMLCanvasElement | undefined | null = undefined;
   constructor(private store: Store) {}
 
   private createAudioMeter(
@@ -40,23 +40,29 @@ export class RecordService {
     this.processor.clipping = false;
     this.processor.lastClip = 0;
     this.processor.volume = 0;
-    this.processor.clipLevel = clipLevel || 0.98;
+    this.processor.clipLevel = clipLevel || 0.54;
     this.processor.averaging = averaging || 0.95;
-    this.processor.clipLag = clipLag || 750;
+    this.processor.clipLag = clipLag || 1500;
+
+    // get canvas
+    this.canva = document.getElementById('meter') as HTMLCanvasElement;
+    this.processor.canva = this.canva!;
+
+    this.processor.meterCtx = this.canva!.getContext('2d')!;
 
     // this will have no effect, since we don't copy the input to the output,
     // but works around a current Chrome bug.
     this.processor.connect(audioContext.destination);
 
-    // processor.checkClipping = function (): boolean {
-    //   if (!this.clipping) {
-    //     return false;
-    //   }
-    //   if (this.lastClip + this.clipLag < window.performance.now()) {
-    //     this.clipping = false;
-    //   }
-    //   return this.clipping;
-    // };
+    this.processor.checkClipping = function (): boolean {
+      if (!this.clipping) {
+        return false;
+      }
+      if (this.lastClip + this.clipLag < window.performance.now()) {
+        this.clipping = false;
+      }
+      return this.clipping;
+    };
 
     this.processor.shutdown = function (): void {
       this.disconnect();
@@ -66,6 +72,7 @@ export class RecordService {
     this.processor.onLoudListener = () => {
       this.aboveThresholdListener();
     };
+
     return this.processor;
   }
 
@@ -90,7 +97,7 @@ export class RecordService {
     }
 
     // ... then take the square root of the sum.
-    const rms = Math.sqrt(sum / bufLength);
+    const rms = Math.sqrt(sum / bufLength) * 2;
 
     // Now smooth this out with the averaging factor applied
     // to the previous sample - take the max here because we
@@ -101,6 +108,17 @@ export class RecordService {
     if (this.volume > (loudnessThreshold || 0.1)) {
       this.onLoudListener();
     }
+
+    // draw meter
+    this.meterCtx.fillStyle = 'black';
+    this.meterCtx.fillRect(0, 0, this.canva.width, this.canva.height);
+    this.meterCtx.fillStyle = this.checkClipping() ? 'red' : 'green';
+    this.meterCtx.fillRect(
+      0,
+      this.canva.height * 1.5 - this.canva.height * rms * 1.5,
+      this.canva.width,
+      this.canva.height * rms * 1.5,
+    );
   }
 
   private aboveThresholdListener(): void {
@@ -195,6 +213,9 @@ declare type ScriptProcessorNodeMod = ScriptProcessorNode & {
   clipLevel: number;
   averaging: number;
   clipLag: number;
+
+  meterCtx: CanvasRenderingContext2D;
+  canva: HTMLCanvasElement;
 
   checkClipping: () => boolean;
   shutdown: () => void;

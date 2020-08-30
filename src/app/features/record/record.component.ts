@@ -2,13 +2,19 @@ import { Component, OnInit } from '@angular/core';
 import { RecordService } from '@core/services/recorder.service';
 import { Store } from '@ngrx/store';
 import { LOAD_RECORDER, START_RECORDING, STOP_RECORDING } from '@core/actions';
+import { Observable } from 'rxjs';
+import { selectRecordingState, selectIsRecording } from '@core/reducers/recording.reducer';
 @Component({
   selector: 'app-record',
   templateUrl: './record.component.html',
   styleUrls: ['./record.component.css'],
 })
 export class RecordComponent implements OnInit {
-  constructor(private store: Store) {}
+  constructor(private store: Store) {
+    this.isRecording$ = this.store.select(selectIsRecording);
+  }
+
+  isRecording$: Observable<boolean>;
 
   ngOnInit(): void {
     this.store.dispatch(

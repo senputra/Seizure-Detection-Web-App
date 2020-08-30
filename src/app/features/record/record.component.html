@@ -1,10 +1,23 @@
+<video
+  id="preview"
+  style="position: absolute; width: 100%; margin: auto; bottom: 0; left: 0; top: 0; right: 0;"
+></video>
 <ng-container>
-  <p>
-    <button mat-raised-button (click)="startRecording()">START RECORDING</button><br />
-    <button mat-raised-button (click)="stopRecording()">STOP RECORDING</button>
-  </p>
-
-  <video id="preview"></video>
-
-  <canvas id="meter" width="500" height="50"></canvas>
+  <div width="100%" style="display: flex; flex-flow: column; align-items: center;">
+    <div style="display: flex; flex-flow: row; justify-content: center;">
+      <ng-container *ngIf="isRecording$ | async; else notRecording">
+        <button mat-raised-button color="warn" (click)="stopRecording()">
+          STOP RECORDING
+        </button> </ng-container
+      ><ng-template #notRecording>
+        <button mat-raised-button (click)="startRecording()">START RECORDING</button>
+      </ng-template>
+    </div>
+    <canvas
+      id="meter"
+      width="50"
+      height="500"
+      style="position: absolute; bottom: 0; left: 0;"
+    ></canvas>
+  </div>
 </ng-container>
