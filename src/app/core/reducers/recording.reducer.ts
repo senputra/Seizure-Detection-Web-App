@@ -1,4 +1,4 @@
-import { User, ANONYMOUS_DOCTOR, RecordingStatus } from '../models';
+import { User, ANONYMOUS_DOCTOR, RecordingStatus, RecordingDoc } from '../models';
 import { createReducer, Action, on, createFeatureSelector, createSelector } from '@ngrx/store';
 import {
   START_RECORDING,
@@ -7,6 +7,8 @@ import {
   CHANGE_PRIORITY,
   STOP_RECORDING,
   TIMER_ONE_SEC_ELAPSED,
+  ADD_FROM_FIRESTORE,
+  DELETE_FROM_FIRESTORE,
 } from '@core/actions';
 
 export const recordingStateFeatureKey = 'recording';
@@ -18,6 +20,10 @@ export interface RecordingState {
   priority: number;
   storagePath?: string;
   secondsElapsed: number;
+  entities: {
+    [id: string]: RecordingDoc;
+  };
+  ids: string[];
 }
 
 const initialState: RecordingState = {
@@ -25,6 +31,8 @@ const initialState: RecordingState = {
   audioVolume: 0,
   priority: 3,
   secondsElapsed: 0,
+  entities: {},
+  ids: [],
 };
 
 const recordingReducer = createReducer(
@@ -49,6 +57,19 @@ const recordingReducer = createReducer(
   }),
   on(UPLOAD_DONE, (state, action) => {
     return { ...state, storagePath: action.path };
+  }),
+  on(ADD_FROM_FIRESTORE, (state, action) => {
+    const newEntities = { ...state.entities };
+    newEntities[action.data.id] = action.data;
+    console.log(newEntities);
+    console.log(action);
+
+    return { ...state, entities: newEntities, ids: [...state.ids, action.data.id] };
+  }),
+  on(DELETE_FROM_FIRESTORE, (state, action) => {
+    const newEntities = { ...state.entities };
+    delete newEntities[action.id];
+    return { ...state, entities: newEntities, ids: state.ids.filter(id => id !== action.id) };
   }),
 );
 
@@ -97,3 +118,7 @@ export const selectMinLeft = createSelector(selectRecordingState, (state: Record
     return 0;
   }
 });
+
+export const selectAllEntities = createSelector(selectRecordingState, (state: RecordingState) =>
+  state.ids.map(id => state.entities[id]),
+);

@@ -1,4 +1,5 @@
 import { createAction, props } from '@ngrx/store';
+import { RecordingDoc } from '@core/models';
 
 export const UPLOAD_DONE = createAction(
   '[upload recoridng] upload recording successfull',
@@ -46,3 +47,13 @@ export const SUBMIT_DATA = createAction(
 export const REDO = createAction('[doctor] redo recording');
 
 export const TIMER_ONE_SEC_ELAPSED = createAction('[recorder] time elapsed');
+
+export const LOAD_ALL = createAction('[load from firestore] load all recording from firestore');
+export const ADD_FROM_FIRESTORE = createAction(
+  '[load from firestore] add one recording from firestore',
+  props<{ data: RecordingDoc }>(),
+);
+export const DELETE_FROM_FIRESTORE = createAction(
+  '[load from firestore] delete one recording from firestore',
+  props<{ id: string }>(),
+);

@@ -1,4 +1,5 @@
 export interface RecordingDoc {
+  id: string;
   mediaURL: string; // path to the media
   priority: PriorityLevel;
   patientName: string;

@@ -28,6 +28,9 @@ import {
   SUBMIT_DATA,
   REDO,
   TIMER_ONE_SEC_ELAPSED,
+  LOAD_ALL,
+  ADD_FROM_FIRESTORE,
+  DELETE_FROM_FIRESTORE,
 } from '../actions';
 import { UploadTaskSnapshot } from '@angular/fire/storage/interfaces';
 import { Router } from '@angular/router';
@@ -37,6 +40,7 @@ import {
   selectIsRecording,
 } from '@core/reducers/recording.reducer';
 import { Store } from '@ngrx/store';
+import { RecordingDoc } from '@core/models';
 
 @Injectable()
 export class RecordingEffects {
@@ -135,6 +139,7 @@ export class RecordingEffects {
             throw new Error('media path not found');
           } else {
             this.databaseService.submitRecording({
+              id: '',
               mediaURL: mediaURLpath,
               priority: action.priority,
               patientName: action.patientName,
@@ -149,6 +154,28 @@ export class RecordingEffects {
         }),
       ),
     { dispatch: false },
+  );
+
+  loadAll$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(LOAD_ALL),
+      switchMap(() => this.databaseService.loadAll()),
+      mergeMap(docsArray => docsArray),
+      map(doc => {
+        switch (doc.type) {
+          case 'added':
+            return ADD_FROM_FIRESTORE({
+              data: doc.payload.doc.data() as RecordingDoc,
+            });
+          case 'removed':
+            return DELETE_FROM_FIRESTORE({
+              id: doc.payload.doc.id as string,
+            });
+          default:
+            throw Error('');
+        }
+      }),
+    ),
   );
 
   constructor(

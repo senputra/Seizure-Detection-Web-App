@@ -181,7 +181,7 @@ export class RecordService {
         this.store.dispatch(
           INITIATE_UPLOAD({
             blobFile: blob,
-            filename: 'lmao',
+            filename: undefined,
             videoURL,
           }),
         );
