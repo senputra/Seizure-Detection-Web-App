@@ -8,11 +8,6 @@ const routes: Routes = [
     loadChildren: () => import('@feature/login/login.module').then(m => m.LoginModule),
   },
   {
-    path: 'detector',
-    loadChildren: () => import('@feature/detector/detector.module').then(m => m.DetectorModule),
-    canActivate: [AuthGuard, DoctorGuard],
-  },
-  {
     path: 'record',
     loadChildren: () => import('@feature/record/record.module').then(m => m.RecordModule),
     canActivate: [AuthGuard, DoctorGuard],

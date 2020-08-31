@@ -1,46 +1,48 @@
 <div style="width: 80%; display: flex; flex-flow: column; align-items: center; margin: auto;">
-  <div style="width: 100%; display: flex; flex-flow: row;">
-    <div style="width: 80%;">
+  <div style="width: 100%; display: flex; flex-flow: row; align-items: center;">
+    <div style="width: 60%;">
       <video
         id="preview"
-        style="width: 80%; height: 30rem;"
+        style="width: 100%; height: 30rem;"
         [src]="this.previewURL$ | async"
         controls
       ></video>
     </div>
 
-    <div style="width: 20%; margin-top: 10rem;">
-      <mat-form-field appearance="fill">
-        <mat-label>Doctor Name</mat-label>
-        <input
-          matInput
-          [value]="(this.recordingDoc$ | async)?.doctorName!"
-          placeholder="Enter Doctor's Name"
-          disabled
-        />
-      </mat-form-field>
-      <br />
-      <mat-form-field appearance="fill">
-        <mat-label>Patient Name</mat-label>
-        <input
-          matInput
-          [value]="(this.recordingDoc$ | async)?.patientName!"
-          placeholder="Enter Patient's Name"
-          disabled
-        />
-      </mat-form-field>
-      <br />
-      <mat-form-field appearance="fill">
-        <mat-label>Patient Age</mat-label>
-        <input
-          matInput
-          [value]="(this.recordingDoc$ | async)?.patientAge!"
-          placeholder="Enter Patient's Age"
-          disabled
-        />
-      </mat-form-field>
-      <br />
-      <button mat-raised-button color="warn" (click)="deleteDoc()">DELETE DOCUMENT</button>
+    <div style="width: 40%; display: flex; flex-flow: row; justify-content: center;">
+      <div style="display: flex; flex-flow: column; width: 20rem;">
+        <mat-form-field appearance="fill">
+          <mat-label>Doctor Name</mat-label>
+          <input
+            matInput
+            [value]="(this.recordingDoc$ | async)?.doctorName!"
+            placeholder="Enter Doctor's Name"
+            disabled
+          />
+        </mat-form-field>
+        <br />
+        <mat-form-field appearance="fill">
+          <mat-label>Patient Name</mat-label>
+          <input
+            matInput
+            [value]="(this.recordingDoc$ | async)?.patientName!"
+            placeholder="Enter Patient's Name"
+            disabled
+          />
+        </mat-form-field>
+        <br />
+        <mat-form-field appearance="fill">
+          <mat-label>Patient Age</mat-label>
+          <input
+            matInput
+            [value]="(this.recordingDoc$ | async)?.patientAge!"
+            placeholder="Enter Patient's Age"
+            disabled
+          />
+        </mat-form-field>
+        <br />
+        <button mat-raised-button color="warn" (click)="deleteDoc()">DELETE DOCUMENT</button>
+      </div>
     </div>
   </div>
 

@@ -1,27 +1,35 @@
-<form [formGroup]="form" (ngSubmit)="submitSecretKey()" class="example-form">
-  <mat-form-field appearance="fill">
-    <mat-label>Doctor Name</mat-label>
-    <input matInput formControlName="doctorName" placeholder="Enter Doctor's Name" />
-    <mat-error *ngIf="this.form.controls['doctorName'].hasError('required')">
-      Name is <strong>required</strong>
-    </mat-error>
-  </mat-form-field>
-  <br />
-  <mat-form-field appearance="fill">
-    <mat-label>Patient Name</mat-label>
-    <input matInput formControlName="patientName" placeholder="Enter Patient's Name" />
-    <mat-error *ngIf="this.form.controls['patientName'].hasError('required')">
-      Name is <strong>required</strong>
-    </mat-error>
-  </mat-form-field>
-  <br />
-  <mat-form-field appearance="fill">
-    <mat-label>Patient Age</mat-label>
-    <input matInput formControlName="patientAge" placeholder="Enter Patient's Age" />
-    <mat-error *ngIf="this.form.controls['patientAge'].hasError('required')">
-      Age is <strong>required</strong>
-    </mat-error>
-  </mat-form-field>
-  <br />
-  <button mat-flat-button type="submit" [disabled]="!form.valid">Submit</button>
-</form>
+<div
+  style="width: 100%; display: flex; flex-flow: row; justify-content: center; padding-top: 10rem;"
+>
+  <form
+    style="display: flex; flex-flow: column; width: 20rem;"
+    [formGroup]="form"
+    (ngSubmit)="submitSecretKey()"
+  >
+    <mat-form-field appearance="fill">
+      <mat-label>Doctor Name</mat-label>
+      <input matInput formControlName="doctorName" placeholder="Enter Doctor's Name" />
+      <mat-error *ngIf="this.form.controls['doctorName'].hasError('required')">
+        Name is <strong>required</strong>
+      </mat-error>
+    </mat-form-field>
+    <br />
+    <mat-form-field appearance="fill">
+      <mat-label>Patient Name</mat-label>
+      <input matInput formControlName="patientName" placeholder="Enter Patient's Name" />
+      <mat-error *ngIf="this.form.controls['patientName'].hasError('required')">
+        Name is <strong>required</strong>
+      </mat-error>
+    </mat-form-field>
+    <br />
+    <mat-form-field appearance="fill">
+      <mat-label>Patient Age</mat-label>
+      <input matInput formControlName="patientAge" placeholder="Enter Patient's Age" />
+      <mat-error *ngIf="this.form.controls['patientAge'].hasError('required')">
+        Age is <strong>required</strong>
+      </mat-error>
+    </mat-form-field>
+    <br />
+    <button mat-flat-button type="submit" [disabled]="!form.valid">Submit</button>
+  </form>
+</div>

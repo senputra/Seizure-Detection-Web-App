@@ -1,12 +1,19 @@
-<form [formGroup]="secretKeyForm" (ngSubmit)="submitsecretKey()" class="example-form">
-  <mat-form-field appearance="fill">
-    <mat-label>Secret Key</mat-label>
-    <input matInput formControlName="secretKeyFormControl" placeholder="Ex12vasd23" required />
-    <mat-error *ngIf="this.secretKeyForm.controls['secretKeyFormControl'].hasError('required')">
-      Secret key is <strong>required</strong>
-    </mat-error>
-  </mat-form-field>
-  <br />
-  <button mat-flat-button type="submit" [disabled]="!secretKeyForm.valid">Submit</button>
-</form>
-<div>{{ this.isAuthenticated$ | async }}</div>
+<div
+  style="width: 100%; display: flex; flex-flow: row; justify-content: center; padding-top: 10rem;"
+>
+  <form
+    style="display: flex; flex-flow: column; width: 20rem;"
+    [formGroup]="secretKeyForm"
+    (ngSubmit)="submitsecretKey()"
+  >
+    <mat-form-field appearance="fill">
+      <mat-label>Secret Key</mat-label>
+      <input matInput formControlName="secretKeyFormControl" placeholder="Ex12vasd23" required />
+      <mat-error *ngIf="this.secretKeyForm.controls['secretKeyFormControl'].hasError('required')">
+        Secret key is <strong>required</strong>
+      </mat-error>
+    </mat-form-field>
+    <br />
+    <button mat-raised-button type="submit" [disabled]="!secretKeyForm.valid">Submit</button>
+  </form>
+</div>

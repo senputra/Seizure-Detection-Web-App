@@ -29,7 +29,7 @@ export interface UserState {
   loading: boolean;
   name?: string;
   patient?: Patient;
-  type: DoctorType;
+  type?: DoctorType;
 }
 export const userStateFeatureKey = 'user';
 
@@ -43,7 +43,7 @@ const FAKE_DOCTOR_GENERAL = {
   // },
 };
 
-const initialState = { ...FAKE_DOCTOR_GENERAL, loading: false };
+const initialState = { loading: false };
 
 /**
  * Reducer stuff

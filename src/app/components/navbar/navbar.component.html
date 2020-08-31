@@ -1,9 +1,18 @@
 <mat-toolbar color="primary">
   <mat-toolbar-row>
-    <a mat-button routerLink="/login">Login</a>
-    <a mat-button [routerLink]="'/detector'">detector</a>
-    <a mat-button [routerLink]="'/record'">record</a>
-    <a mat-button [routerLink]="'/record-dashboard'">record-dashboard</a>
-    <button mat-raised-button (click)="logout()">Log out</button>
+    <ng-container *ngIf="!(isAuthenticated$ | async)">
+      <a mat-button routerLink="/login">Login</a>
+    </ng-container>
+    <ng-container [ngSwitch]="type$ | async">
+      <ng-container *ngSwitchCase="'SPECIALIST'">
+        <a mat-button [routerLink]="'/record-dashboard'">dashboard</a>
+      </ng-container>
+      <ng-container *ngSwitchCase="'GENERAL'">
+        <a mat-button [routerLink]="'/record'">record</a>
+      </ng-container>
+    </ng-container>
+    <ng-container *ngIf="isAuthenticated$ | async">
+      <button mat-raised-button (click)="logout()">Log out</button>
+    </ng-container>
   </mat-toolbar-row>
 </mat-toolbar>
