@@ -19,4 +19,12 @@ export class CloudStorageService {
     }
     return ref.put(recordingBlob).snapshotChanges();
   }
+
+  getDownloadURL(path: string): Observable<string> {
+    return this.storage.ref(path).getDownloadURL();
+  }
+
+  remove(path: string) {
+    this.storage.ref(path).delete();
+  }
 }

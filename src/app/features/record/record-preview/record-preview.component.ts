@@ -14,7 +14,7 @@ import { GeneralDoctorInputData, CHANGE_PRIORITY, SUBMIT_DATA } from '@core/acti
   styleUrls: ['./record-preview.component.scss'],
 })
 export class RecordPreviewComponent implements OnDestroy {
-  previewURL$: Observable<string | undefined>;
+  previewURL$: Observable<SafeUrl | undefined>;
   docName$: Observable<string | undefined>;
   priority$: Observable<number>;
   priority = 3;
@@ -28,7 +28,7 @@ export class RecordPreviewComponent implements OnDestroy {
   });
 
   private subscriptions: Subscription[] = [];
-  constructor(private store: Store, private sanitizer: DomSanitizer, private fb: FormBuilder) {
+  constructor(private store: Store, private fb: FormBuilder) {
     const video = document.getElementById('preview') as HTMLVideoElement;
 
     this.previewURL$ = this.store.select(selectPreviewVideoURL).pipe(
@@ -77,9 +77,6 @@ export class RecordPreviewComponent implements OnDestroy {
         extraNotes: (this.form.value.extraNotes as string) || '',
       }),
     );
-  }
-  sanitize(url: string | undefined | null): SafeUrl {
-    return this.sanitizer.bypassSecurityTrustUrl(url || '');
   }
 
   ngOnDestroy(): void {

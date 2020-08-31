@@ -10,13 +10,15 @@ import {
   ADD_FROM_FIRESTORE,
   DELETE_FROM_FIRESTORE,
 } from '@core/actions';
+import { create } from 'domain';
+import { SafeUrl } from '@angular/platform-browser';
 
 export const recordingStateFeatureKey = 'recording';
 
 export interface RecordingState {
   status: RecordingStatus;
   audioVolume: number; // this number can be use to trigger animation
-  videoPreviewURL?: string; // only to show before uploading
+  videoPreviewURL?: SafeUrl; // only to show before uploading
   priority: number;
   storagePath?: string;
   secondsElapsed: number;
@@ -60,11 +62,12 @@ const recordingReducer = createReducer(
   }),
   on(ADD_FROM_FIRESTORE, (state, action) => {
     const newEntities = { ...state.entities };
-    newEntities[action.data.id] = action.data;
-    console.log(newEntities);
-    console.log(action);
-
-    return { ...state, entities: newEntities, ids: [...state.ids, action.data.id] };
+    if (state.ids.indexOf(action.data.id) === -1) {
+      newEntities[action.data.id] = action.data;
+      return { ...state, entities: newEntities, ids: [...state.ids, action.data.id] };
+    } else {
+      return state;
+    }
   }),
   on(DELETE_FROM_FIRESTORE, (state, action) => {
     const newEntities = { ...state.entities };
@@ -121,4 +124,11 @@ export const selectMinLeft = createSelector(selectRecordingState, (state: Record
 
 export const selectAllEntities = createSelector(selectRecordingState, (state: RecordingState) =>
   state.ids.map(id => state.entities[id]),
+);
+
+// specific recording
+
+export const selectRecordingDoc = createSelector(
+  selectRecordingState,
+  (state: RecordingState, props: { id: string }) => state.entities[props.id],
 );

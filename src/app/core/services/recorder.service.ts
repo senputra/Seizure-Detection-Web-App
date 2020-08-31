@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { INITIATE_UPLOAD } from '@core/actions';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 
 @Injectable({ providedIn: 'root' })
 export class RecordService {
@@ -20,7 +21,7 @@ export class RecordService {
   private processor: ScriptProcessorNodeMod | undefined = undefined;
   private videoPreviewHTML: HTMLVideoElement | undefined = undefined;
   private canva: HTMLCanvasElement | undefined | null = undefined;
-  constructor(private store: Store) {}
+  constructor(private store: Store, private sanitizer: DomSanitizer) {}
 
   private createAudioMeter(
     audioContext: AudioContext,
@@ -177,7 +178,7 @@ export class RecordService {
       this.mediaRecorder.onstop = ev => {
         const blob = new Blob(dataBuffer, { type: 'video/mp4;' });
         dataBuffer.splice(0);
-        const videoURL = window.URL.createObjectURL(blob);
+        const videoURL = this.sanitize(window.URL.createObjectURL(blob));
         this.store.dispatch(
           INITIATE_UPLOAD({
             blobFile: blob,
@@ -193,6 +194,10 @@ export class RecordService {
     // this.videoPreviewHTML?.pause();
     // this.audioMeter?.disconnect();
     // this.audioContext?.close();
+  }
+
+  sanitize(url: string | undefined | null): SafeUrl {
+    return this.sanitizer.bypassSecurityTrustUrl(url || '');
   }
 }
 

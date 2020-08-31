@@ -6,6 +6,7 @@ import { Store } from '@ngrx/store';
 import { selectAllEntities } from '@core/reducers/recording.reducer';
 import { RecordingDoc } from '@core/models';
 import { Subscription } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-record-dashboard',
@@ -13,19 +14,19 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./record-dashboard.component.css'],
 })
 export class RecordDashboardComponent implements OnInit, AfterViewInit, OnDestroy {
-  displayedColumns: string[] = ['Date', 'Name', 'Age', 'Doctor Name', 'Priority'];
+  displayedColumns: string[] = ['Name', 'Age', "Doctor's Name", 'Priority', 'Date'];
   dataSource = new MatTableDataSource<RecordingDoc>([]);
   subs: Subscription[] = [];
   @ViewChild(MatSort, { static: true })
   sort!: MatSort;
 
-  constructor(private store: Store) {}
+  constructor(private store: Store, private router: Router) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.store.dispatch(LOAD_ALL());
   }
 
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     this.subs.push(
       this.store.select(selectAllEntities).subscribe((docArray: RecordingDoc[]) => {
         this.dataSource = new MatTableDataSource(docArray);
@@ -34,11 +35,14 @@ export class RecordDashboardComponent implements OnInit, AfterViewInit, OnDestro
     );
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.subs.forEach(sub => sub.unsubscribe());
   }
 
-  convertDate(secs: number) {
+  convertDate(secs: number): Date {
     return new Date(secs * 1000);
+  }
+  click(obj: RecordingDoc): void {
+    this.router.navigate(['record-dashboard', 'd', obj.id]);
   }
 }

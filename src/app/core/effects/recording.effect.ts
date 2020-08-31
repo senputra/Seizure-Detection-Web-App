@@ -31,6 +31,7 @@ import {
   LOAD_ALL,
   ADD_FROM_FIRESTORE,
   DELETE_FROM_FIRESTORE,
+  USER_DELETE_DOC,
 } from '../actions';
 import { UploadTaskSnapshot } from '@angular/fire/storage/interfaces';
 import { Router } from '@angular/router';
@@ -57,12 +58,18 @@ export class RecordingEffects {
           return uploadTask;
         }
       }),
-      filter(
-        (uploadTask: UploadTaskSnapshot) => uploadTask.bytesTransferred === uploadTask.totalBytes,
-      ),
+      // filter(
+      //   (uploadTask: UploadTaskSnapshot) => uploadTask.bytesTransferred === uploadTask.totalBytes,
+      // ),
       map((uploadTask: UploadTaskSnapshot) => {
-        console.log(uploadTask.ref.fullPath);
-        return UPLOAD_DONE({ path: uploadTask.ref.fullPath });
+        if (uploadTask.bytesTransferred === uploadTask.totalBytes) {
+          console.log(uploadTask.ref.fullPath);
+          return UPLOAD_DONE({ path: uploadTask.ref.fullPath });
+        } else {
+          return UPLOADING({
+            percentage: (uploadTask.bytesTransferred / uploadTask.totalBytes) * 100,
+          });
+        }
       }),
     ),
   );
@@ -155,6 +162,18 @@ export class RecordingEffects {
       ),
     { dispatch: false },
   );
+
+  deleteDoc$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(USER_DELETE_DOC),
+      map(action => {
+        this.databaseService.deleteDoc(action.id);
+        this.storageService.remove(action.mediaPath);
+        this.router.navigate(['record-dashboard']);
+        return DELETE_FROM_FIRESTORE({ id: action.id });
+      }),
+    );
+  });
 
   loadAll$ = createEffect(() =>
     this.actions$.pipe(

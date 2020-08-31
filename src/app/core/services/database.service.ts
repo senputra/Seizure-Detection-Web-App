@@ -21,4 +21,8 @@ export class DatabaseService {
   loadAll(): Observable<DocumentChangeAction<unknown>[]> {
     return this.afs.collection('recordings').snapshotChanges();
   }
+
+  deleteDoc(id: string): void {
+    this.afs.collection('recordings').doc(id).delete();
+  }
 }

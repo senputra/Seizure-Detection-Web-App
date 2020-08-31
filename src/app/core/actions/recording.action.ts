@@ -1,5 +1,6 @@
 import { createAction, props } from '@ngrx/store';
 import { RecordingDoc } from '@core/models';
+import { SafeUrl } from '@angular/platform-browser';
 
 export const UPLOAD_DONE = createAction(
   '[upload recoridng] upload recording successfull',
@@ -13,7 +14,7 @@ export const UPLOAD_FAIL = createAction('[upload recoridng] upload recording fai
 
 export const INITIATE_UPLOAD = createAction(
   '[upload recording] initiate uploade recording',
-  props<{ blobFile: Blob; videoURL: string; filename: string | undefined }>(),
+  props<{ blobFile: Blob; videoURL: SafeUrl; filename: string | undefined }>(),
 );
 
 export const STOP_RECORDING = createAction('[recorder] stop recording');
@@ -56,4 +57,9 @@ export const ADD_FROM_FIRESTORE = createAction(
 export const DELETE_FROM_FIRESTORE = createAction(
   '[load from firestore] delete one recording from firestore',
   props<{ id: string }>(),
+);
+
+export const USER_DELETE_DOC = createAction(
+  '[user] delete one recording from firestore',
+  props<{ id: string; mediaPath: string }>(),
 );

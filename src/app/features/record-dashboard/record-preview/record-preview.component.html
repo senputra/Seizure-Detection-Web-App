@@ -1,0 +1,80 @@
+<div style="width: 80%; display: flex; flex-flow: column; align-items: center; margin: auto;">
+  <div style="width: 100%; display: flex; flex-flow: row;">
+    <div style="width: 80%;">
+      <video
+        id="preview"
+        style="width: 80%; height: 30rem;"
+        [src]="this.previewURL$ | async"
+        controls
+      ></video>
+    </div>
+
+    <div style="width: 20%; margin-top: 10rem;">
+      <mat-form-field appearance="fill">
+        <mat-label>Doctor Name</mat-label>
+        <input
+          matInput
+          [value]="(this.recordingDoc$ | async)?.doctorName!"
+          placeholder="Enter Doctor's Name"
+          disabled
+        />
+      </mat-form-field>
+      <br />
+      <mat-form-field appearance="fill">
+        <mat-label>Patient Name</mat-label>
+        <input
+          matInput
+          [value]="(this.recordingDoc$ | async)?.patientName!"
+          placeholder="Enter Patient's Name"
+          disabled
+        />
+      </mat-form-field>
+      <br />
+      <mat-form-field appearance="fill">
+        <mat-label>Patient Age</mat-label>
+        <input
+          matInput
+          [value]="(this.recordingDoc$ | async)?.patientAge!"
+          placeholder="Enter Patient's Age"
+          disabled
+        />
+      </mat-form-field>
+      <br />
+      <button mat-raised-button color="warn" (click)="deleteDoc()">DELETE DOCUMENT</button>
+    </div>
+  </div>
+
+  <div style="width: 80%; display: flex; flex-flow: column; justify-content: center;">
+    <div style="display: flex; flex-flow: row; align-items: baseline; justify-content: center;">
+      <p>Priority</p>
+      <ng-container *ngFor="let i of [1, 2, 3, 4, 5]">
+        <ng-container *ngIf="i <= (this.recordingDoc$ | async)?.priority!; else deadBtn">
+          <button mat-icon-button color="primary">
+            <mat-icon>
+              priority_high
+            </mat-icon>
+          </button>
+        </ng-container>
+        <ng-template #deadBtn>
+          <button mat-icon-button>
+            <mat-icon>
+              priority_high
+            </mat-icon>
+          </button>
+        </ng-template>
+      </ng-container>
+    </div>
+    <mat-form-field appearance="fill" style="width: 100%;">
+      <textarea
+        matInput
+        [matTextareaAutosize]="true"
+        [matAutosizeMinRows]="5"
+        [matAutosizeMaxRows]="10"
+        style="width: 100%;"
+        placeholder="Write extra notes here"
+        disable
+        >{{ (this.recordingDoc$ | async)?.notes || 'No extra notes.' }}</textarea
+      >
+    </mat-form-field>
+  </div>
+</div>
