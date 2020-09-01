@@ -63,7 +63,6 @@ export class RecordingEffects {
       // ),
       map((uploadTask: UploadTaskSnapshot) => {
         if (uploadTask.bytesTransferred === uploadTask.totalBytes) {
-          console.log(uploadTask.ref.fullPath);
           return UPLOAD_DONE({ path: uploadTask.ref.fullPath });
         } else {
           return UPLOADING({
@@ -81,7 +80,7 @@ export class RecordingEffects {
         /** An EMPTY observable only emits completion. Replace with your own observable stream */
         tap(() => this.recordService.startRecording()),
         switchMap(action =>
-          interval(100).pipe(
+          interval(1000).pipe(
             take(181), // take must be inside the inner pipe to contain its effect
             // concatMap(val => of(val).pipe(withLatestFrom(this.store.select(selectIsRecording)))),
             // filter(([val, isRecording]) => isRecording),
