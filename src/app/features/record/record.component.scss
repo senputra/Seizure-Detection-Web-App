@@ -1,0 +1,30 @@
+#spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -8rem;
+  margin-left: -8rem;
+  width: 16rem;
+  height: 16rem;
+
+  background-image: url('/assets/WHEEL.png');
+  background-size: cover;
+}
+
+#motivation {
+  position: absolute;
+  top: 75%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 1rem 2rem;
+  border-radius: 0.175rem;
+  text-align: center;
+
+  background-color: white;
+
+  transition-property: opacity;
+  transition-duration: 1s;
+  transition-timing-function: linear;
+
+  opacity: 0;
+}

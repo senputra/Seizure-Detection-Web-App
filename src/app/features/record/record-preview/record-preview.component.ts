@@ -32,14 +32,10 @@ export class RecordPreviewComponent implements OnDestroy {
     const video = document.getElementById('preview') as HTMLVideoElement;
 
     this.previewURL$ = this.store.select(selectPreviewVideoURL).pipe(
-      tap(url => console.log(url)),
       filter(url => !!url),
       take(1),
     );
-    this.docName$ = this.store.select(selectDoctorName).pipe(
-      tap(url => console.log(url)),
-      filter(url => !!url),
-    );
+    this.docName$ = this.store.select(selectDoctorName).pipe(filter(url => !!url));
     this.priority$ = this.store.select(selectPriority);
 
     this.subscriptions.push(
