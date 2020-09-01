@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { EMPTY, from, of, interval } from 'rxjs';
+import { EMPTY, from, of, interval, combineLatest } from 'rxjs';
 import {
   map,
   mergeMap,
@@ -39,6 +39,7 @@ import {
   selectPreviewVideoURL,
   selectStoragePath,
   selectIsRecording,
+  selectAllStoragePath,
 } from '@core/reducers/recording.reducer';
 import { Store } from '@ngrx/store';
 import { RecordingDoc } from '@core/models';
@@ -194,6 +195,33 @@ export class RecordingEffects {
         }
       }),
     ),
+  );
+
+  cleanUpCLoudStorage$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(LOAD_ALL),
+        concatMap(action =>
+          combineLatest([
+            this.databaseService
+              .loadAll()
+              .pipe(
+                map(docs => docs.map(doc => (doc.payload.doc.data() as RecordingDoc).mediaURL)),
+              ),
+            this.storageService.getAllPath(),
+          ]),
+        ),
+        map(([relevants, all]) => {
+          console.log(relevants);
+          console.log(all);
+          relevants.forEach(str => {
+            all = all.filter(val => !val.includes(str));
+          });
+
+          all.forEach(ref => this.storageService.remove(ref));
+        }),
+      ),
+    { dispatch: false },
   );
 
   constructor(

@@ -1,11 +1,17 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject } from '@angular/core';
 import { AngularFireStorage } from '@angular/fire/storage';
 import { generateId } from '../utils/random-generator';
 import { Observable } from 'rxjs';
+import { map, tap } from 'rxjs/operators';
+import { ListResult } from '@angular/fire/storage/interfaces';
+import { Logger } from '@core/devServices/logger.service';
 
 @Injectable({ providedIn: 'root' })
 export class CloudStorageService {
-  constructor(private storage: AngularFireStorage) {}
+  private logger: Logger;
+  constructor(private storage: AngularFireStorage) {
+    this.logger = new Logger('cloud service');
+  }
 
   uploadRecordingData(
     recordingBlob: Blob,
@@ -24,7 +30,14 @@ export class CloudStorageService {
     return this.storage.ref(path).getDownloadURL();
   }
 
-  remove(path: string) {
+  remove(path: string): void {
     this.storage.ref(path).delete();
+  }
+
+  getAllPath(): Observable<string[]> {
+    return this.storage
+      .ref('recording')
+      .listAll()
+      .pipe(map((listResults: ListResult) => listResults.items.map(item => `${item.fullPath}`)));
   }
 }

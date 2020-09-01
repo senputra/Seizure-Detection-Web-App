@@ -132,3 +132,8 @@ export const selectRecordingDoc = createSelector(
   selectRecordingState,
   (state: RecordingState, props: { id: string }) => state.entities[props.id],
 );
+
+// Clean up purposes
+export const selectAllStoragePath = createSelector(selectAllEntities, (docs: RecordingDoc[]) =>
+  docs.map(doc => doc.mediaURL),
+);
