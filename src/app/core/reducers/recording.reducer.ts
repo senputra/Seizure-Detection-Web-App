@@ -26,6 +26,7 @@ export interface RecordingState {
     [id: string]: RecordingDoc;
   };
   ids: string[];
+  uploadDone: boolean;
 }
 
 const initialState: RecordingState = {
@@ -35,6 +36,7 @@ const initialState: RecordingState = {
   secondsElapsed: 0,
   entities: {},
   ids: [],
+  uploadDone: false,
 };
 
 const recordingReducer = createReducer(
@@ -43,7 +45,11 @@ const recordingReducer = createReducer(
     return { ...state, status: RecordingStatus.RECORDING, secondsElapsed: 0 };
   }),
   on(STOP_RECORDING, (state, action) => {
-    return { ...state, status: RecordingStatus.NOT_RECORDING, secondsElapsed: 0 };
+    return {
+      ...state,
+      status: RecordingStatus.NOT_RECORDING,
+      secondsElapsed: 0,
+    };
   }),
   on(TIMER_ONE_SEC_ELAPSED, (state, action) => {
     return {
@@ -52,13 +58,13 @@ const recordingReducer = createReducer(
     };
   }),
   on(INITIATE_UPLOAD, (state, action) => {
-    return { ...state, videoPreviewURL: action.videoURL };
+    return { ...state, uploadDone: false, videoPreviewURL: action.videoURL };
   }),
   on(CHANGE_PRIORITY, (state, action) => {
     return { ...state, priority: action.priority };
   }),
   on(UPLOAD_DONE, (state, action) => {
-    return { ...state, storagePath: action.path };
+    return { ...state, uploadDone: true, storagePath: action.path };
   }),
   on(ADD_FROM_FIRESTORE, (state, action) => {
     const newEntities = { ...state.entities };
@@ -124,6 +130,11 @@ export const selectMinLeft = createSelector(selectRecordingState, (state: Record
 
 export const selectAllEntities = createSelector(selectRecordingState, (state: RecordingState) =>
   state.ids.map(id => state.entities[id]),
+);
+
+export const selectIsUploadDone = createSelector(
+  selectRecordingState,
+  (state: RecordingState) => state.uploadDone,
 );
 
 // specific recording

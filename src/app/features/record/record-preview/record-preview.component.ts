@@ -1,8 +1,12 @@
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { Observable, of, merge, Subscription, zip } from 'rxjs';
 import { Store } from '@ngrx/store';
-import { selectPreviewVideoURL, selectPriority } from '@core/reducers/recording.reducer';
-import { tap, filter, take } from 'rxjs/operators';
+import {
+  selectPreviewVideoURL,
+  selectPriority,
+  selectIsUploadDone,
+} from '@core/reducers/recording.reducer';
+import { tap, filter, take, map } from 'rxjs/operators';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { Validators, FormBuilder } from '@angular/forms';
 import { selectDoctorName, selectPatientAge, selectPatientName } from '@core/reducers/user.reducer';
@@ -17,6 +21,7 @@ export class RecordPreviewComponent implements OnDestroy {
   previewURL$: Observable<SafeUrl | undefined>;
   docName$: Observable<string | undefined>;
   priority$: Observable<number>;
+  uploadDone$: Observable<boolean>;
   priority = 3;
 
   form = this.fb.group({
@@ -30,7 +35,7 @@ export class RecordPreviewComponent implements OnDestroy {
   private subscriptions: Subscription[] = [];
   constructor(private store: Store, private fb: FormBuilder) {
     const video = document.getElementById('preview') as HTMLVideoElement;
-
+    this.uploadDone$ = this.store.select(selectIsUploadDone);
     this.previewURL$ = this.store.select(selectPreviewVideoURL).pipe(
       filter(url => !!url),
       take(1),
@@ -64,15 +69,26 @@ export class RecordPreviewComponent implements OnDestroy {
     );
   }
   submit(): void {
-    this.store.dispatch(
-      SUBMIT_DATA({
-        doctorName: (this.form.value.doctorName as string) || '',
-        patientName: (this.form.value.patientName as string) || '',
-        patientAge: (this.form.value.patientAge as number) || 1,
-        priority: this.priority,
-        extraNotes: (this.form.value.extraNotes as string) || '',
-      }),
-    );
+    this.uploadDone$
+      .pipe(
+        take(1),
+        map(done => {
+          if (done) {
+            this.store.dispatch(
+              SUBMIT_DATA({
+                doctorName: (this.form.value.doctorName as string) || '',
+                patientName: (this.form.value.patientName as string) || '',
+                patientAge: (this.form.value.patientAge as number) || 1,
+                priority: this.priority,
+                extraNotes: (this.form.value.extraNotes as string) || '',
+              }),
+            );
+          } else {
+            alert('Upload is not done yet. Please wait!');
+          }
+        }),
+      )
+      .subscribe();
   }
 
   ngOnDestroy(): void {
