@@ -86,10 +86,6 @@ export class RecordService {
       this.onaudioprocess = null;
     };
 
-    this.processor.onLoudListener = () => {
-      this.aboveThresholdListener();
-    };
-
     return this.processor;
   }
 
@@ -134,10 +130,6 @@ export class RecordService {
     // }, 16);
   }
 
-  private aboveThresholdListener(): void {
-    // console.log('very loud');
-  }
-
   setVideoPreviewElement(eleName: string): void {
     this.videoPreviewHTML = document.getElementById(eleName) as HTMLVideoElement;
     if (this.videoPreviewHTML === null) {
@@ -173,6 +165,11 @@ export class RecordService {
     }
     if (typeof this.mediaRecorder !== 'undefined') {
       this.mediaRecorder.stop();
+      this.mediaStream?.disconnect();
+      this.processor?.shutdown();
+      this.audioContext?.close();
+      this.audioMeter?.disconnect();
+      this.videoPreviewHTML?.pause();
       console.log(this.mediaRecorder.state);
     } else {
       throw MEDIA_RECORD_UNDEFINED_ERROR;
@@ -214,6 +211,7 @@ export class RecordService {
         dataBuffer.push(ev.data);
       };
       this.mediaRecorder.onstop = ev => {
+        mediaStreamObj.getTracks().map(track => track.stop());
         const blob = new Blob(dataBuffer, { type: 'video/mp4;' });
         dataBuffer.splice(0);
         const videoURL = this.sanitize(window.URL.createObjectURL(blob));
