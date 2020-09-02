@@ -179,52 +179,60 @@ export class RecordService {
   // Start video view stream
   startVideoStream(): void {
     this.audioContext = new AudioContext();
-    navigator.mediaDevices.getUserMedia(this.constraingObj).then((mediaStreamObj: MediaStream) => {
-      // attach to video to camera feed
-      if (typeof this.videoPreviewHTML !== 'undefined') {
-        this.videoPreviewHTML.srcObject = mediaStreamObj;
-        this.videoPreviewHTML.onloadedmetadata = (e: Event) => {
-          if (typeof this.videoPreviewHTML !== 'undefined') {
-            this.videoPreviewHTML.muted = true; // mute before preview to avoid echo
-            this.videoPreviewHTML.play();
-          }
-        };
+    navigator.permissions.query({ name: 'camera' }).then(result => {
+      if (result.state === 'denied') {
+        alert('access to camera is blocked');
       } else {
-        alert('Video preview element not found Error');
-        return;
+        navigator.mediaDevices
+          .getUserMedia(this.constraingObj)
+          .then((mediaStreamObj: MediaStream) => {
+            // attach to video to camera feed
+            if (typeof this.videoPreviewHTML !== 'undefined') {
+              this.videoPreviewHTML.srcObject = mediaStreamObj;
+              this.videoPreviewHTML.onloadedmetadata = (e: Event) => {
+                if (typeof this.videoPreviewHTML !== 'undefined') {
+                  this.videoPreviewHTML.muted = true; // mute before preview to avoid echo
+                  this.videoPreviewHTML.play();
+                }
+              };
+            } else {
+              alert('Video preview element not found Error');
+              return;
+            }
+
+            // attach to preview after recording
+            this.mediaRecorder = new MediaRecorder(mediaStreamObj, {
+              mimeType: 'video/webm',
+            });
+            const dataBuffer: BlobPart[] | undefined = [];
+
+            // attach media stream to audioContext as an input for processing
+            if (typeof this.audioContext !== 'undefined') {
+              this.mediaStream = this.audioContext.createMediaStreamSource(mediaStreamObj);
+              this.audioMeter = this.createAudioMeter(this.audioContext) as ScriptProcessorNode;
+              this.mediaStream.connect(this.audioMeter);
+            } else {
+              throw Error('Audio context is undefined');
+            }
+
+            this.mediaRecorder.ondataavailable = (ev: BlobEvent) => {
+              dataBuffer.push(ev.data);
+            };
+            this.mediaRecorder.onstop = ev => {
+              mediaStreamObj.getTracks().map(track => track.stop());
+              const blob = new Blob(dataBuffer, { type: 'video/webm' });
+              dataBuffer.splice(0);
+              const videoURL = this.sanitize(window.URL.createObjectURL(blob));
+              this.store.dispatch(
+                INITIATE_UPLOAD({
+                  blobFile: blob,
+                  filename: undefined,
+                  videoURL,
+                }),
+              );
+            };
+          });
       }
-
-      // attach to preview after recording
-      this.mediaRecorder = new MediaRecorder(mediaStreamObj, {
-        mimeType: 'video/webm',
-      });
-      const dataBuffer: BlobPart[] | undefined = [];
-
-      // attach media stream to audioContext as an input for processing
-      if (typeof this.audioContext !== 'undefined') {
-        this.mediaStream = this.audioContext.createMediaStreamSource(mediaStreamObj);
-        this.audioMeter = this.createAudioMeter(this.audioContext) as ScriptProcessorNode;
-        this.mediaStream.connect(this.audioMeter);
-      } else {
-        throw Error('Audio context is undefined');
-      }
-
-      this.mediaRecorder.ondataavailable = (ev: BlobEvent) => {
-        dataBuffer.push(ev.data);
-      };
-      this.mediaRecorder.onstop = ev => {
-        mediaStreamObj.getTracks().map(track => track.stop());
-        const blob = new Blob(dataBuffer, { type: 'video/webm' });
-        dataBuffer.splice(0);
-        const videoURL = this.sanitize(window.URL.createObjectURL(blob));
-        this.store.dispatch(
-          INITIATE_UPLOAD({
-            blobFile: blob,
-            filename: undefined,
-            videoURL,
-          }),
-        );
-      };
     });
   }
   shutdown(): void {
