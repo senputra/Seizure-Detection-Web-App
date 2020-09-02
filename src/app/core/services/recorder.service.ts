@@ -195,7 +195,9 @@ export class RecordService {
       }
 
       // attach to preview after recording
-      this.mediaRecorder = new MediaRecorder(mediaStreamObj);
+      this.mediaRecorder = new MediaRecorder(mediaStreamObj, {
+        mimeType: 'video/webm',
+      });
       const dataBuffer: BlobPart[] | undefined = [];
 
       // attach media stream to audioContext as an input for processing
@@ -212,7 +214,7 @@ export class RecordService {
       };
       this.mediaRecorder.onstop = ev => {
         mediaStreamObj.getTracks().map(track => track.stop());
-        const blob = new Blob(dataBuffer, { type: 'video/mp4;' });
+        const blob = new Blob(dataBuffer, { type: 'video/webm' });
         dataBuffer.splice(0);
         const videoURL = this.sanitize(window.URL.createObjectURL(blob));
         this.store.dispatch(
