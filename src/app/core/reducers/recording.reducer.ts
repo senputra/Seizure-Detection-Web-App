@@ -9,6 +9,7 @@ import {
   TIMER_ONE_SEC_ELAPSED,
   ADD_FROM_FIRESTORE,
   DELETE_FROM_FIRESTORE,
+  UPLOADING,
 } from '@core/actions';
 import { create } from 'domain';
 import { SafeUrl } from '@angular/platform-browser';
@@ -27,6 +28,7 @@ export interface RecordingState {
   };
   ids: string[];
   uploadDone: boolean;
+  percentage: number;
 }
 
 const initialState: RecordingState = {
@@ -37,6 +39,7 @@ const initialState: RecordingState = {
   entities: {},
   ids: [],
   uploadDone: false,
+  percentage: 0,
 };
 
 const recordingReducer = createReducer(
@@ -58,13 +61,16 @@ const recordingReducer = createReducer(
     };
   }),
   on(INITIATE_UPLOAD, (state, action) => {
-    return { ...state, uploadDone: false, videoPreviewURL: action.videoURL };
+    return { ...state, uploadDone: false, videoPreviewURL: action.videoURL, percentage: 0 };
   }),
   on(CHANGE_PRIORITY, (state, action) => {
     return { ...state, priority: action.priority };
   }),
   on(UPLOAD_DONE, (state, action) => {
-    return { ...state, uploadDone: true, storagePath: action.path };
+    return { ...state, uploadDone: true, storagePath: action.path, percentage: 0 };
+  }),
+  on(UPLOADING, (state, action) => {
+    return { ...state, percentage: action.percentage };
   }),
   on(ADD_FROM_FIRESTORE, (state, action) => {
     const newEntities = { ...state.entities };
@@ -135,6 +141,11 @@ export const selectAllEntities = createSelector(selectRecordingState, (state: Re
 export const selectIsUploadDone = createSelector(
   selectRecordingState,
   (state: RecordingState) => state.uploadDone,
+);
+
+export const selectUploadPercentage = createSelector(
+  selectRecordingState,
+  (state: RecordingState) => state.percentage,
 );
 
 // specific recording

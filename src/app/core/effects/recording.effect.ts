@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Injector, NgZone } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { EMPTY, from, of, interval, combineLatest } from 'rxjs';
 import {
@@ -49,7 +49,8 @@ export class RecordingEffects {
   initiateUpload$ = createEffect(() =>
     this.actions$.pipe(
       ofType(INITIATE_UPLOAD),
-      tap(() => this.router.navigate(['record', 'preview'])),
+      tap(() => this.navigateZone(['record', 'preview'])),
+      // tap(() => this.navigateZoe(['record', 'preview'])),
       mergeMap(action => this.storageService.uploadRecordingData(action.blobFile, action.filename)),
       map((uploadTask: UploadTaskSnapshot | undefined) => {
         // type guard
@@ -59,9 +60,6 @@ export class RecordingEffects {
           return uploadTask;
         }
       }),
-      // filter(
-      //   (uploadTask: UploadTaskSnapshot) => uploadTask.bytesTransferred === uploadTask.totalBytes,
-      // ),
       map((uploadTask: UploadTaskSnapshot) => {
         if (uploadTask.bytesTransferred === uploadTask.totalBytes) {
           return UPLOAD_DONE({ path: uploadTask.ref.fullPath });
@@ -130,7 +128,7 @@ export class RecordingEffects {
       this.actions$.pipe(
         ofType(REDO),
         map(() => {
-          this.router.navigate(['record']);
+          this.navigateZone(['record']);
         }),
       ),
     { dispatch: false },
@@ -156,7 +154,7 @@ export class RecordingEffects {
               notes: action.extraNotes,
             });
 
-            this.router.navigate(['record', 'sus']);
+            this.navigateZone(['record', 'sus']);
           }
         }),
       ),
@@ -169,7 +167,7 @@ export class RecordingEffects {
       map(action => {
         this.databaseService.deleteDoc(action.id);
         this.storageService.remove(action.mediaPath);
-        this.router.navigate(['record-dashboard']);
+        this.navigateZone(['record-dashboard']);
         return DELETE_FROM_FIRESTORE({ id: action.id });
       }),
     );
@@ -178,6 +176,7 @@ export class RecordingEffects {
   loadAll$ = createEffect(() =>
     this.actions$.pipe(
       ofType(LOAD_ALL),
+      take(1),
       switchMap(() => this.databaseService.loadAll()),
       mergeMap(docsArray => docsArray),
       map(doc => {
@@ -211,19 +210,22 @@ export class RecordingEffects {
             this.storageService.getAllPath(),
           ]),
         ),
+        take(1),
         map(([relevants, all]) => {
-          console.log(relevants);
-          console.log(all);
           relevants.forEach(str => {
             all = all.filter(val => !val.includes(str));
           });
-
           all.forEach(ref => this.storageService.remove(ref));
         }),
       ),
     { dispatch: false },
   );
 
+  private navigateZone(urls: string[]) {
+    this.ngZone.run(() => {
+      this.router.navigate(urls);
+    });
+  }
   constructor(
     private store: Store,
     private actions$: Actions,
@@ -231,5 +233,9 @@ export class RecordingEffects {
     private recordService: RecordService,
     private databaseService: DatabaseService,
     private router: Router,
-  ) {}
+    private injector: Injector,
+    private ngZone: NgZone,
+  ) {
+    this.router = this.injector.get(Router);
+  }
 }

@@ -34,7 +34,6 @@ export class RecordPreviewComponent implements OnDestroy {
     private activatedRoute: ActivatedRoute,
     private cloud: CloudStorageService,
   ) {
-    const video = document.getElementById('preview') as HTMLVideoElement;
     this.docId = this.activatedRoute.snapshot.paramMap.get('id') || '';
     this.recordingDoc$ = this.store.select(selectRecordingDoc, { id: this.docId });
     this.previewURL$ = this.recordingDoc$.pipe(

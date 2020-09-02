@@ -1,6 +1,11 @@
 <div style="width: 80%; display: flex; flex-flow: column; align-items: center; margin: auto;">
   <h1>
-    Recording completed! {{ (uploadDone$ | async) ? ' Upload is done!' : ' Uploading file ...' }}
+    Recording completed!
+    {{
+      (uploadDone$ | async)
+        ? ' Upload is done!'
+        : ' Uploading file ' + (uploadPercentage$ | async) + '%'
+    }}
   </h1>
   <div style="width: 100%; display: flex; flex-flow: row; align-items: center;">
     <div style="width: 60%;">
@@ -47,7 +52,7 @@
           mat-raised-button
           type="submit"
           color="primary"
-          [disabled]="!form.valid && (uploadDone$ | async)"
+          [disabled]="!form.valid && !(uploadDone$ | async)"
         >
           Submit
         </button>

@@ -5,10 +5,11 @@ import {
   selectPreviewVideoURL,
   selectPriority,
   selectIsUploadDone,
+  selectUploadPercentage,
 } from '@core/reducers/recording.reducer';
 import { tap, filter, take, map } from 'rxjs/operators';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
-import { Validators, FormBuilder } from '@angular/forms';
+import { Validators, FormBuilder, FormGroup } from '@angular/forms';
 import { selectDoctorName, selectPatientAge, selectPatientName } from '@core/reducers/user.reducer';
 import { GeneralDoctorInputData, CHANGE_PRIORITY, SUBMIT_DATA } from '@core/actions';
 
@@ -19,29 +20,25 @@ import { GeneralDoctorInputData, CHANGE_PRIORITY, SUBMIT_DATA } from '@core/acti
 })
 export class RecordPreviewComponent implements OnDestroy {
   previewURL$: Observable<SafeUrl | undefined>;
-  docName$: Observable<string | undefined>;
-  priority$: Observable<number>;
+  uploadPercentage$: Observable<number>;
   uploadDone$: Observable<boolean>;
   priority = 3;
 
-  form = this.fb.group({
-    patientName: ['', Validators.required],
-    doctorName: ['', Validators.required],
-    patientAge: [1, [Validators.min(0), Validators.max(100)]],
-    priority: [3, Validators.required],
-    extraNotes: [''],
-  });
+  form: FormGroup;
 
   private subscriptions: Subscription[] = [];
   constructor(private store: Store, private fb: FormBuilder) {
-    const video = document.getElementById('preview') as HTMLVideoElement;
     this.uploadDone$ = this.store.select(selectIsUploadDone);
-    this.previewURL$ = this.store.select(selectPreviewVideoURL).pipe(
-      filter(url => !!url),
-      take(1),
-    );
-    this.docName$ = this.store.select(selectDoctorName).pipe(filter(url => !!url));
-    this.priority$ = this.store.select(selectPriority);
+    this.previewURL$ = this.store.select(selectPreviewVideoURL);
+    this.uploadPercentage$ = this.store.select(selectUploadPercentage);
+
+    this.form = this.fb.group({
+      patientName: ['', Validators.required],
+      doctorName: ['', Validators.required],
+      patientAge: [1, [Validators.min(0), Validators.max(100)]],
+      priority: [3, Validators.required],
+      extraNotes: [''],
+    });
 
     this.subscriptions.push(
       zip(
@@ -49,12 +46,10 @@ export class RecordPreviewComponent implements OnDestroy {
         this.store.select(selectPatientName),
         this.store.select(selectPatientAge),
       ).subscribe(([doctorName, patientName, patientAge]) => {
-        this.form.setValue({
+        this.form.patchValue({
           doctorName,
           patientName,
           patientAge,
-          priority: this.form.value.priority as number,
-          extraNotes: this.form.value.extraNotes as string,
         });
       }),
     );
