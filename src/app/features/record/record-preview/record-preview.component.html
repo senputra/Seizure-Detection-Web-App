@@ -4,7 +4,7 @@
     {{
       (uploadDone$ | async)
         ? ' Upload is done!'
-        : ' Uploading file ' + (uploadPercentage$ | async) + '%'
+        : ' Uploading file ' + (uploadPercentage$ | async)!.toPrecision(3) + '%'
     }}
   </h1>
   <div style="width: 100%; display: flex; flex-flow: row; align-items: center;">
@@ -52,7 +52,7 @@
           mat-raised-button
           type="submit"
           color="primary"
-          [disabled]="!form.valid && !(uploadDone$ | async)"
+          [disabled]="!form.valid || !(uploadDone$ | async)"
         >
           Submit
         </button>

@@ -35,7 +35,7 @@ export class RecordPreviewComponent implements OnDestroy {
     this.form = this.fb.group({
       patientName: ['', Validators.required],
       doctorName: ['', Validators.required],
-      patientAge: [1, [Validators.min(0), Validators.max(100)]],
+      patientAge: [1, [Validators.required, Validators.min(0), Validators.max(1000)]],
       priority: [3, Validators.required],
       extraNotes: [''],
     });
