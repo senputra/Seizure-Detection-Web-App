@@ -13,7 +13,7 @@ const routes: Routes = [
     canActivate: [AuthGuard, DoctorGuard],
   },
   {
-    path: 'record-dashboard',
+    path: 'dashboard',
     loadChildren: () =>
       import('@feature/record-dashboard/record-dashboard.module').then(
         m => m.RecordDashboardModule,

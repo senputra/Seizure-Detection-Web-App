@@ -19,9 +19,11 @@ import {
   GeneralDoctorInputData,
   Logout,
 } from '../actions';
-import { map, mergeMap, tap } from 'rxjs/operators';
+import { map, mergeMap, tap, switchMap, take } from 'rxjs/operators';
 import { environment } from '@environment/environment';
 import { Router } from '@angular/router';
+import { DatabaseService } from '@core/services/database.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 /**
  * State stuff
  */
@@ -35,7 +37,7 @@ export const userStateFeatureKey = 'user';
 
 const FAKE_DOCTOR_GENERAL = {
   loading: false,
-  type: DoctorType.GENERAL,
+  type: DoctorType.NON,
   // name: 'sadf',
   // patient: {
   //   name: 'asdf',
@@ -92,17 +94,21 @@ export class UserEffects {
     () =>
       this.actions$.pipe(
         ofType(LoginWithSecretKey),
+        switchMap(action => this.db.getDoctorTypeFromKey(action.secretKey).pipe(take(1))),
         map(action => {
-          switch (action.secretKey) {
-            case environment.keys.SPECIALIST_KEY:
-              this.router.navigate(['/record-dashboard']);
+          console.log(action);
+          switch (action) {
+            case DoctorType.SPECIALIST:
+              this.router.navigate(['/dashboard']);
               return RegisterDoctorType({ doctorType: DoctorType.SPECIALIST });
-            case environment.keys.GENERAL_KEY:
+            case DoctorType.GENERAL:
               this.router.navigate(['/login', 'check-in']);
               return RegisterDoctorType({ doctorType: DoctorType.GENERAL });
             default:
+              this.snackBar.open('Key is wrong', undefined, {
+                duration: 1000,
+              });
               return SecretKeyError();
-            // error notification
           }
         }),
       ),
@@ -148,7 +154,13 @@ export class UserEffects {
   );
   private logger: Logger;
 
-  constructor(private actions$: Actions, private store: Store, private router: Router) {
+  constructor(
+    private actions$: Actions,
+    private store: Store,
+    private router: Router,
+    private db: DatabaseService,
+    private snackBar: MatSnackBar,
+  ) {
     this.logger = new Logger('[User Effect] =>');
   }
 }

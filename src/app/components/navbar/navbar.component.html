@@ -5,7 +5,8 @@
     </ng-container>
     <ng-container [ngSwitch]="type$ | async">
       <ng-container *ngSwitchCase="'SPECIALIST'">
-        <a mat-button [routerLink]="'/record-dashboard'">dashboard</a>
+        <a mat-button [routerLink]="'/dashboard'">dashboard</a>
+        <a mat-button [routerLink]="'/dashboard/admin-console'">key manager</a>
       </ng-container>
       <ng-container *ngSwitchCase="'GENERAL'">
         <a mat-button [routerLink]="'/record'">record</a>

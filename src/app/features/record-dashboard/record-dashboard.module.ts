@@ -3,9 +3,14 @@ import { RecordDashboardComponent } from './record-dashboard.component';
 import { SharedModule } from '@shared/shared.module';
 import { Routes, RouterModule } from '@angular/router';
 import { RecordPreviewComponent } from '@feature/record-dashboard/record-preview/record-preview.component';
+import {
+  AdminConsoleComponent,
+  NewKeyDialogComponent,
+} from './admin-console/admin-console.component';
 
 const routes: Routes = [
   { path: '', component: RecordDashboardComponent },
+  { path: 'admin-console', component: AdminConsoleComponent },
   {
     path: 'd/:id',
     component: RecordPreviewComponent,
@@ -22,6 +27,12 @@ class RecordDashboardRoutingModule {}
 
 @NgModule({
   imports: [SharedModule, RecordDashboardRoutingModule],
-  declarations: [RecordDashboardComponent, RecordPreviewComponent],
+  declarations: [
+    RecordDashboardComponent,
+    RecordPreviewComponent,
+    AdminConsoleComponent,
+    NewKeyDialogComponent,
+  ],
+  entryComponents: [NewKeyDialogComponent],
 })
 export class RecordDashboardModule {}

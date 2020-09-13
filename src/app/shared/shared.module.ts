@@ -1,7 +1,8 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MaterialModule } from './material.module';
-const modules = [CommonModule, MaterialModule];
+import { FormsModule } from '@angular/forms';
+const modules = [CommonModule, MaterialModule, FormsModule];
 @NgModule({
   imports: modules,
   declarations: [],

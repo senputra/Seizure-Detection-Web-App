@@ -11,7 +11,7 @@ export class DoctorGuard implements CanActivate {
   constructor(private store: Store) {}
 
   private readonly generalDoctorURL = ['/record', '/detector'];
-  private readonly specialistDoctorURL = ['/record-dashboard'];
+  private readonly specialistDoctorURL = ['/dashboard'];
 
   /**
    * Check if the specialist and doctor are in their respective pages

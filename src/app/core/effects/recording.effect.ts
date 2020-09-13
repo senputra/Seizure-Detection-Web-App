@@ -167,7 +167,7 @@ export class RecordingEffects {
       map(action => {
         this.databaseService.deleteDoc(action.id);
         this.storageService.remove(action.mediaPath);
-        this.navigateZone(['record-dashboard']);
+        this.navigateZone(['dashboard']);
         return DELETE_FROM_FIRESTORE({ id: action.id });
       }),
     );

@@ -43,6 +43,6 @@ export class RecordDashboardComponent implements OnInit, AfterViewInit, OnDestro
     return new Date(secs * 1000);
   }
   click(obj: RecordingDoc): void {
-    this.router.navigate(['record-dashboard', 'd', obj.id]);
+    this.router.navigate(['dashboard', 'd', obj.id]);
   }
 }
