@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "seizure-detection-3b9dc"
+    "default": "seizure-detection-3b9dc",
+    "aks": "medicalapp-a3e35"
   }
 }
